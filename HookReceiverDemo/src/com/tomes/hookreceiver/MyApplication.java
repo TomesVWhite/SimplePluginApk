@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.tomes.hookreceiver.hook.HookBroadcastReceiver;
+import com.tomes.hookreceiver.hook.HookHelper;
 import com.tomes.hookreceiver.utils.LogUtils;
 import com.tomes.hookreceiver.utils.Utils;
 
@@ -31,6 +32,10 @@ public class MyApplication extends Application {
 		try {
 			if (pluginApkFile.exists()) {
 				// 加载插件apk进去
+				File dexFile = getFileStreamPath("TestDemo.apk");
+                File optDexFile = getFileStreamPath("test.dex");
+				//加载插件apk进去
+				HookHelper.hook(getClassLoader(),dexFile,optDexFile);
 				HookBroadcastReceiver.hookReceiver(base, pluginApkFile);
 			} else {
 				LogUtils.i(pluginApkFile + "该插件apk不存在");
