@@ -25,6 +25,11 @@ public class MyApplication extends Application {
 		super.attachBaseContext(base);
 		mContext = base;
 		try {
+			Utils.extractAssets(base, "TestDemo.apk");
+			File apkFile = getFileStreamPath("TestDemo.apk");
+            File odexFile = getFileStreamPath("test.odex");
+			//hookClassLoader
+			HookHelper.hookClassLoader(getClassLoader(), apkFile, odexFile);
 			HookHelper.hook();
 		} catch (Exception e) {
 			e.printStackTrace();

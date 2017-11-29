@@ -29,8 +29,15 @@ public class ProxyService extends Service{
 	@Override
 	@Deprecated
 	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
+		// 分发Service
 		LogUtils.i("ProxyService--->onStart()");
+		try {
+			ProxyServiceManager.onStart(intent, startId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		super.onStart(intent, startId);
+		
 	}
 	
 	@Override

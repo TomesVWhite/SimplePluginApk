@@ -9,7 +9,7 @@ import android.content.Intent;
 
 public class IActivityManagerInvocationHandler implements InvocationHandler {
 
-	private static final String SERVICE_RAWIN_TENT = "service_rawIn_tent";
+	public static final String SERVICE_RAWIN_TENT = "service_rawIn_tent";
 	private Object mBase;
 
 	public IActivityManagerInvocationHandler(Object mInstance) {
