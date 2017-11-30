@@ -30,6 +30,8 @@ public class MyApplication extends Application {
             File odexFile = getFileStreamPath("test.odex");
 			//hookClassLoader
 			HookHelper.hookClassLoader(getClassLoader(), apkFile, odexFile);
+			//hook了classloader后，解析插件apk
+			ProxyServiceManager.parsePluginApkService(apkFile);
 			HookHelper.hook();
 		} catch (Exception e) {
 			e.printStackTrace();

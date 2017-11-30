@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <service android:name="com.tomes.servicepluginimp.ProxyService"
-            android:process=":plugin01"></service>
+            ></service>
     </application>
 
 </manifest>
