@@ -11,6 +11,7 @@ import java.util.Set;
 
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
@@ -46,7 +47,42 @@ public class ProxyServiceManager {
 		Service service = mServiceMap.get(serviceInfo.name);
 		service.onStart(rawIntent, startId);
 	}
-
+	
+	//代理hook的是ActivityManagerNative.getDefault().stopService 所以动态代理返回值的时候，需要一个int值，否则会出现.ClassCastException
+	/**hook到插件中执行stopService()的时候，将其分发过来，并调用插件service的onDestroy，销毁插件service对象
+	 * @param rawIntent
+	 * @return
+	 */
+	public static int stopService(Intent rawIntent) {
+		ServiceInfo serviceInfo = selectPluginService(rawIntent);
+		//先判断这个service有没有注册在androidManifest里
+		if(serviceInfo==null){
+			LogUtils.i("the apk can't find service:"+rawIntent.getComponent());
+			return 0;
+		}
+		//根据service的名字获取通过代理孩子啊运行的service
+		Service service = mServiceMap.get(serviceInfo.name);
+		if(service==null){
+			//证明这个service要么没存在就直接stop了，要么就已经执行过stop了
+			LogUtils.i("can not runnning, are you stopped it multi-times?");
+            return 0;
+		}
+		//调用插件中真正service的destory()；
+		service.onDestroy();
+		//销毁了真正的service之后，删掉他在map中的记录，证明活动的service中已经没有这个service了
+		mServiceMap.remove(serviceInfo.name);
+		
+		//没有要代理的service后，就把代理service也一起关掉。
+        if (mServiceMap.isEmpty()) {
+            // 没有Service了, 这个没有必要存在了
+        	LogUtils.i("service all stopped, stop proxy");
+            Context appContext = MyApplication.getContext();
+            Intent intent = new Intent();
+            intent.setClassName(appContext.getPackageName(), ProxyService.class.getName());
+            appContext.stopService(intent);
+        }
+		return 1;
+	}
 	/**
      * 通过ActivityThread的handleCreateService方法创建出Service对象
      * @param serviceInfo 插件的ServiceInfo

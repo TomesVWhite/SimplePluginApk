@@ -29,7 +29,7 @@ public class ProxyService extends Service{
 	@Override
 	@Deprecated
 	public void onStart(Intent intent, int startId) {
-		// 分发Service
+		// 分发Service，放在super.onStart(intent, startId)下也能正常执行。
 		LogUtils.i("ProxyService--->onStart()");
 		try {
 			ProxyServiceManager.onStart(intent, startId);
